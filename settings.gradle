@@ -26,5 +26,5 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = 'gatewayip'
+rootProject.name = 'termux-gateway-ip'
 include ':command', ':command:stub'
