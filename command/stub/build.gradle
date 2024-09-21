@@ -1,0 +1,20 @@
+plugins {
+  alias(libs.plugins.android.library)
+}
+
+android {
+  namespace "com.termux.gatewayip.stub"
+  buildFeatures {
+    aidl true
+    buildConfig false
+  }
+  buildTypes {
+    release {
+      minifyEnabled false
+    }
+  }
+}
+
+dependencies {
+  implementation(libs.androidx.annotation)
+}

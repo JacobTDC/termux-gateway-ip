@@ -1,0 +1,73 @@
+plugins {
+  alias(libs.plugins.android.application)
+}
+
+android {
+  namespace "com.termux.gatewayip.command"
+
+  buildTypes {
+    debug {
+      multiDexEnabled false
+    }
+    release {
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+    }
+  }
+
+  dependenciesInfo {
+    includeInApk false
+  }
+
+  lint {
+    checkReleaseBuilds false
+  }
+
+  applicationVariants.all { variant ->
+    variant.outputs.all {
+      //def dexPath = "${project.buildDir.path}/outputs/dex/${variant.getName()}"
+      def dexPath = layout.buildDirectory.dir("outputs/dex/${variant.getName()}")
+
+
+      def extract = tasks.register("extractDex${variant.getName().capitalize()}") {
+        dependsOn variant.assembleProvider
+        doLast {
+          delete dexPath
+          copy {
+            def file = zipTree(file(outputFile)).matching { include 'classes*.dex' }.singleFile
+
+            from file
+            into dexPath
+            rename { String fileName ->
+              fileName.replace(file.getName(), "${project.getName()}-${variant.getName()}.dex")
+            }
+            fileMode 0400
+          }
+        }
+      }
+
+      /* tasks.register("extractDex${variant.getName().capitalize()}", Sync) {
+        dependsOn variant.assembleProvider
+
+        val file = zipTree(file(outputFile)).matching { include 'classes*.dex' }.singleFile
+
+        doFirst {
+          delete dexPath
+        }
+
+        from file
+        into dexPath
+        rename { String fileName ->
+          fileName.replace(file.getName(), "${project.getName()}-${variant.getName()}.dex")
+        }
+        fileMode 0400
+      } */
+
+    }
+  }
+}
+
+dependencies {
+  implementation(libs.androidx.annotation)
+  compileOnly project(":command:stub")
+}

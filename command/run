@@ -1,0 +1,7 @@
+#!/data/data/com.termux/files/usr/bin/sh
+
+SCRIPT_DIR=$(dirname -- $0)
+DEX_FILE=$SCRIPT_DIR/build/outputs/dex/debug/command-debug.dex
+
+unset LD_LIBRARY_PATH LD_PRELOAD
+exec /system/bin/app_process -cp $DEX_FILE /system/bin com.termux.gatewayip.CommandLineEntry "$@"

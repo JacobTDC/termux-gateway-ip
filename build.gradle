@@ -1,0 +1,36 @@
+plugins {
+  alias(libs.plugins.android.application) apply false
+  alias(libs.plugins.android.library) apply false
+}
+
+allprojects {
+  gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+      options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    }
+  }
+}
+
+subprojects {
+  plugins.withId("com.android.base") {
+
+    android {
+      compileSdk project.properties.compileSdk.toInteger()
+      //buildToolsVersion "34.0.0-rc3"
+
+      defaultConfig {
+        minSdk project.properties.minSdk.toInteger()
+        targetSdk project.properties.targetSdk.toInteger()
+      }
+
+      compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+      }
+    }
+  }
+}
+
+task clean(type: Delete) {
+  delete rootProject.buildDir
+}

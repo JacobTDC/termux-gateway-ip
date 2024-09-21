@@ -1,0 +1,30 @@
+pluginManagement {
+  repositories {
+    google()
+    gradlePluginPortal()
+    mavenCentral()
+  }
+}
+
+dependencyResolutionManagement {
+  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+  repositories {
+    google()
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+  }
+
+  versionCatalogs {
+    libs {
+      version('android-build', '8.1.4')
+
+      plugin('android-application', 'com.android.application').versionRef('android-build')
+      plugin('android-library', 'com.android.library').versionRef('android-build')
+      library('android-buildtools', 'com.android.tools.build', 'gradle').versionRef('android-build')
+      library('androidx-annotation', 'androidx.annotation:annotation:1.7.0')
+    }
+  }
+}
+
+rootProject.name = 'gatewayip'
+include ':command', ':command:stub'
