@@ -2,6 +2,15 @@ plugins {
   alias(libs.plugins.android.application)
 }
 
+// An empty task. We'll populate the dependsOn later to extract
+// the dex files for all variants.
+tasks.register('extractDex') {
+  description "Runs extractDex[variant] for all variants."
+  group "build"
+}
+
+tasks.build.dependsOn tasks.extractDex
+
 android {
   namespace "com.termux.gatewayip.command"
 
@@ -10,8 +19,8 @@ android {
       multiDexEnabled false
     }
     release {
+      multiDexEnabled false
       minifyEnabled true
-      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
     }
   }
 
@@ -25,44 +34,38 @@ android {
 
   applicationVariants.all { variant ->
     variant.outputs.all {
-      //def dexPath = "${project.buildDir.path}/outputs/dex/${variant.getName()}"
-      def dexPath = layout.buildDirectory.dir("outputs/dex/${variant.getName()}")
+      //def dexDir = "${project.buildDir.path}/outputs/dex/${variant.getName()}"
+      def dexDir = layout.buildDirectory.dir("outputs/dex/${variant.getDirName()}")
 
-
-      def extract = tasks.register("extractDex${variant.getName().capitalize()}") {
+      def extractDexVariant = tasks.register("extractDex${variant.getName().capitalize()}", Sync) {
+        description "Extracts the dex file from the output apk for variant ${variant.getName()}."
         dependsOn variant.assembleProvider
-        doLast {
-          delete dexPath
-          copy {
-            def file = zipTree(file(outputFile)).matching { include 'classes*.dex' }.singleFile
-
-            from file
-            into dexPath
-            rename { String fileName ->
-              fileName.replace(file.getName(), "${project.getName()}-${variant.getName()}.dex")
-            }
-            fileMode 0400
-          }
-        }
-      }
-
-      /* tasks.register("extractDex${variant.getName().capitalize()}", Sync) {
-        dependsOn variant.assembleProvider
-
-        val file = zipTree(file(outputFile)).matching { include 'classes*.dex' }.singleFile
 
         doFirst {
-          delete dexPath
+          delete dexDir
         }
 
-        from file
-        into dexPath
-        rename { String fileName ->
-          fileName.replace(file.getName(), "${project.getName()}-${variant.getName()}.dex")
-        }
+        from zipTree(outputFile).matching({ include 'classes*.dex' })
+        into dexDir
         fileMode 0400
+      }
+
+      /* def extractDexVariant = tasks.register("extractDex${variant.getName().capitalize()}", Exec) {
+        description "Extracts the dex file from the output apk for variant ${variant.getName()}."
+        dependsOn variant.assembleProvider
+
+        doFirst {
+          delete dexDir
+          mkdir dexDir
+        }
+
+        workingDir dexDir
+        commandLine 'd8', outputFile
       } */
 
+      // Add this variant to the extractDex task.
+      tasks.extractDex.dependsOn extractDexVariant
+      tasks.buildDebugPreBundle.dependsOn extractDexVariant
     }
   }
 }
