@@ -1,4 +1,4 @@
-This is a little project that is able to get the current network's gateway IP on Termux, done as a demonstration.
+This is a little project that is able to get the current network's gateway IP on Termux, done as a demonstration. This is necessary because Android 14+ restricts access to /proc/net, making it impossible to obtain the current gateway IP through conventional means.
 
 To build on device, you'll need to setup sdkmanager and set your ANDROID\_HOME environment variable, and add `android.aapt2FromMavenOverride=/data/data/com.termux/files/usr/bin/aapt2` to your ~/.gradle/gradle.properties.
 
