@@ -9,6 +9,7 @@ tasks.register('extractDex') {
   group "build"
 }
 
+// Add our new task to the build.
 tasks.build.dependsOn tasks.extractDex
 
 android {
@@ -65,7 +66,6 @@ android {
 
       // Add this variant to the extractDex task.
       tasks.extractDex.dependsOn extractDexVariant
-      tasks.buildDebugPreBundle.dependsOn extractDexVariant
     }
   }
 }
